@@ -20,6 +20,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^0.2.1",
+    "date-fns": "^3.6.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "lucide-react": "^0.373.0",
     "mongodb": "^6.6.1",
