@@ -90,14 +90,14 @@ export const POST = async (
 
     // Update collections
     await Promise.all([
-      // Update added collections with this product
+  
       ...addedCollections.map((collectionId: string) =>
         Collection.findByIdAndUpdate(collectionId, {
           $push: { products: product._id },
         })
       ),
 
-      // Update removed collections without this product
+     
       ...removedCollections.map((collectionId: string) =>
         Collection.findByIdAndUpdate(collectionId, {
           $pull: { products: product._id },
