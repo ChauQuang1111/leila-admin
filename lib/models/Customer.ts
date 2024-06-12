@@ -5,7 +5,7 @@ const customerSchema = new mongoose.Schema({
   name: String,
   email: String,
   orders: {
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order"}]
   },
   createdAt: {
     type: Date,
@@ -14,10 +14,9 @@ const customerSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
-const Customer =
-  mongoose.models.Customer || mongoose.model("Customer", customerSchema);
+const Customer = mongoose.models.Customer || mongoose.model("Customer", customerSchema);
 
 export default Customer;

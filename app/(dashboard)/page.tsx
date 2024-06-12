@@ -1,56 +1,65 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Plus } from "lucide-react";
-
-import Loader from "@/components/custom ui/Loader";
-import { Button } from "@/components/ui/button";
+import SalesChart from "@/components/custom ui/SaleChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/custom ui/DataTable";
-import { columns } from "@/components/products/ProductColumns";
+import {
+  getSalesPerMonth,
+  getTotalCustomers,
+  getTotalSales,
+} from "@/lib/actions/actions";
+import { CircleDollarSign, ShoppingBag, UserRound } from "lucide-react";
 
-const Products = () => {
-  const router = useRouter();
+export default async function Home() {
+  const totalRevenue = await getTotalSales().then((data) => data.totalRevenue);
+  const totalOrders = await getTotalSales().then((data) => data.totalOrders);
+  const totalCustomers = await getTotalCustomers();
 
-  const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const graphData = await getSalesPerMonth();
 
-  const getProducts = async () => {
-    try {
-      const res = await fetch("/api/products", {
-        method: "GET",
-      });
-      const data = await res.json();
-      setProducts(data);
-      setLoading(false);
-    } catch (err) {
-      console.log("[products_GET]", err);
-    }
-  };
+  return (
+    <div className="px-8 py-10">
+      <p className="text-heading2-bold">Dashboard</p>
+      <Separator className="bg-grey-1 my-5" />
 
-  useEffect(() => {
-    getProducts();
-  }, []);
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-10">
+        <Card>
+          <CardHeader className="flex flex-row justify-between items-center">
+            <CardTitle>Total Revenue</CardTitle>
+            <CircleDollarSign className="max-sm:hidden" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-body-bold">$ {totalRevenue}</p>
+          </CardContent>
+        </Card>
 
-  return loading ? (
-    <Loader />
-  ) : (
-    <div className="px-10 py-5">
-      <div className="flex items-center justify-between">
-        <p className="text-heading2-bold">Products</p>
-        <Button
-          className="bg-blue-1 text-white"
-          onClick={() => router.push("/products/new")}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Create Product
-        </Button>
+        <Card>
+          <CardHeader className="flex flex-row justify-between items-center">
+            <CardTitle>Total Orders</CardTitle>
+            <ShoppingBag className="max-sm:hidden" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-body-bold">{totalOrders}</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row justify-between items-center">
+            <CardTitle>Total Customer</CardTitle>
+            <UserRound className="max-sm:hidden" />
+          </CardHeader>
+          <CardContent>
+            <p className="text-body-bold">{totalCustomers}</p>
+          </CardContent>
+        </Card>
       </div>
-      <Separator className="bg-grey-1 my-4" />
-      <DataTable columns={columns} data={products} searchKey="title" />
+
+      <Card className="mt-10">
+        <CardHeader>
+          <CardTitle>Sales Chart ($)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SalesChart data={graphData} />
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default Products;
+}
