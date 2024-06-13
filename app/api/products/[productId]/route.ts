@@ -70,10 +70,11 @@ export const POST = async (
       colors,
       price,
       expense,
+      quantity, // Added quantity to destructuring
     } = await req.json();
 
-    if (!title || !description || !media || !category || !price || !expense) {
-      return new NextResponse("Not enough data to create a new product", {
+    if (!title || !description || !media || !category || !price || !expense || quantity === undefined) {
+      return new NextResponse("Not enough data to update the product", {
         status: 400,
       });
     }
@@ -84,7 +85,7 @@ export const POST = async (
     // included in new data, but not included in the previous data
 
     const removedCollections = product.collections.filter(
-      (collectionId: string) => !collections.includes(collectionId)
+      (collectionId: string) => !collections.some((e: string) => e == collectionId) 
     );
     // included in previous data, but not included in the new data
 
@@ -119,6 +120,7 @@ export const POST = async (
         colors,
         price,
         expense,
+        quantity, // Updated quantity
       },
       { new: true }
     ).populate({ path: "collections", model: Collection });

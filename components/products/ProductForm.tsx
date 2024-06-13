@@ -26,7 +26,7 @@ import MultiSelect from "../custom ui/MultiSelect";
 import Loader from "../custom ui/Loader";
 
 const formSchema = z.object({
-  title: z.string().min(2).max(20),
+  title: z.string().min(2).max(50),
   description: z.string().min(2).max(500).trim(),
   media: z.array(z.string()),
   category: z.string(),
@@ -36,6 +36,7 @@ const formSchema = z.object({
   colors: z.array(z.string()),
   price: z.coerce.number().min(0.1),
   expense: z.coerce.number().min(0.1),
+  quantity: z.coerce.number().default(1),
 });
 
 interface ProductFormProps {
@@ -86,6 +87,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
           colors: [],
           price: 0.1,
           expense: 0.1,
+          quantity: 0,
         },
   });
 
@@ -351,6 +353,25 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData }) => {
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="Quantity"
+                    {...field}
+                    onKeyDown={handleKeyPress}
+                  />
+                </FormControl>
+                <FormMessage className="text-red-1" />
+              </FormItem>
+            )}
+          />  
 
           <div className="flex gap-10">
             <Button type="submit" className="bg-blue-1 text-white">
