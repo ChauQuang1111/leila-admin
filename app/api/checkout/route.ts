@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import Product from "@/lib/models/Product";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,40 @@ export async function POST(req: NextRequest) {
 
     if (!cartItems || !customer) {
       return new NextResponse("Not enough data to checkout", { status: 400 });
+    }
+
+    // check quantity before checkout
+    let product;
+    let cartItem;
+    const productSession = await Product.startSession();
+    productSession.startTransaction();
+    try {
+      for (let i = 0; i < cartItems.length; i++) {
+        cartItem = cartItems[i];
+        product = await Product.findById(cartItem.item._id);
+        if (!product)
+          throw new Error("Product " + cartItem.item.title + " is not found.");
+        
+        if (cartItem.quantity > product.quantity) 
+          throw new Error("cartItem's quantity " + cartItem.quantity + " is greater than product's quantity " + product.quantity);
+        product.quantity -= cartItem.quantity;
+        
+        // Update product
+        const updatedProduct = await Product.findByIdAndUpdate(
+          product._id,
+          { quantity: product.quantity },
+          { new: true, session: productSession }
+        );
+        console.log("Updated: " + updatedProduct);
+      }
+      await productSession.commitTransaction();
+    } catch (error) {
+      const errorMessage = (<Error>error).message;
+      console.log("Error: " + errorMessage);
+      await productSession.abortTransaction();
+      return new NextResponse(JSON.stringify({ message: errorMessage, }), { status: 400 });
+    } finally {
+      await productSession.endSession();
     }
 
     const session = await stripe.checkout.sessions.create({
