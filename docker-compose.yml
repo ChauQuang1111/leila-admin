@@ -1,0 +1,18 @@
+version: '3.4'
+
+services:
+  leila-admin:
+    image: leila-admin
+    ports:
+      - 3000:3000
+    volumes:
+      - C:\Users\Admin\Desktop\Leila Ecommerce Store\leila-admin:/home/node
+    command: "npm run dev"
+  leila-store:
+    image: leila-store
+    ports:
+      - 3001:3001
+    volumes:
+      - C:\Users\Admin\Desktop\Leila Ecommerce Store\leila-store:/home/node
+    command: "npm run dev"
+
