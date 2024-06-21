@@ -8,9 +8,9 @@ services:
     ports:
       - 3000:3000
     extra_hosts:
-      - "localhost:192.168.1.13"  
+      - "localhost:192.168.5.1"  
     volumes:
-      - D:\EIU\Web-Examples\leila\leila-admin:/home/node
+      - ./:/home/node
     command: "npm run dev"    
   leila-store:
     build: 
@@ -21,9 +21,9 @@ services:
     ports:
       - 3001:3001
     extra_hosts:
-      - "localhost:192.168.1.13"  
+      - "localhost:192.168.5.1"  
     volumes:
-      - D:\EIU\Web-Examples\leila\leila-store:/home/node
+      - ..\leila-store:/home/node
     command: "npm run dev"
 
 
